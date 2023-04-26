@@ -32,13 +32,14 @@ impl Application {
         let time_string = format!("{}-{}-{}_{}-{}-{}", current_date.year(), current_date.month(), current_date.day(), current_date.hour(), current_date.minute(), current_date.second());
 
         // Logger to log to log file and to the stdout
-        let mut custom_logger = logger::templates::get_file_logger(
+        let mut custom_logger = logger::structs::Logger::extended_file_logger(
             LevelFilter::Trace,
+            LevelFilter::Warn,
             format!("./core/application/resources/logging/{time_string}_log.txt")).expect("Failed to create file logger!"
         );
-        custom_logger.add_writer(Box::new(stdout()));
+        custom_logger.add_general_writer((LevelFilter::Trace, Box::new(stdout())));
 
-        logger::init_custom_logger(custom_logger).expect("Failed to init logger!");
+        logger::init_general_logger(custom_logger).expect("Failed to init logger!");
 
         debug!("Test log!");
 

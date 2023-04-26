@@ -12,7 +12,7 @@ fn get_test_result() -> String {
 #[test]
 fn test_max_level_error() {
     let expected_result = "[ERROR]: ERROR\n";
-    logger::templates::init_file_logger(LevelFilter::Error, PATH_TO_TEST_FILE).expect("Failed to init logger!");
+    logger::templates::init_simple_file_logger(LevelFilter::Error, PATH_TO_TEST_FILE).expect("Failed to init logger!");
 
     error!("ERROR");
     warn!("WARN");
@@ -29,7 +29,7 @@ fn test_max_level_error() {
 #[test]
 fn test_max_level_warn() {
     let expected_result = "[ERROR]: ERROR\n [WARN]: WARN\n";
-    logger::templates::init_file_logger(LevelFilter::Warn, PATH_TO_TEST_FILE).expect("Failed to init logger!");
+    logger::templates::init_simple_file_logger(LevelFilter::Warn, PATH_TO_TEST_FILE).expect("Failed to init logger!");
 
     error!("ERROR");
     warn!("WARN");
@@ -46,7 +46,7 @@ fn test_max_level_warn() {
 #[test]
 fn test_max_level_info() {
     let expected_result = "[ERROR]: ERROR\n [WARN]: WARN\n [INFO]: INFO\n";
-    logger::templates::init_file_logger(LevelFilter::Info, PATH_TO_TEST_FILE).expect("Failed to init logger!");
+    logger::templates::init_simple_file_logger(LevelFilter::Info, PATH_TO_TEST_FILE).expect("Failed to init logger!");
 
     error!("ERROR");
     warn!("WARN");
@@ -63,7 +63,7 @@ fn test_max_level_info() {
 #[test]
 fn test_max_level_debug() {
     let expected_result = "[ERROR]: ERROR\n [WARN]: WARN\n [INFO]: INFO\n[DEBUG]: DEBUG\n";
-    logger::templates::init_file_logger(LevelFilter::Debug, PATH_TO_TEST_FILE).expect("Failed to init logger!");
+    logger::templates::init_simple_file_logger(LevelFilter::Debug, PATH_TO_TEST_FILE).expect("Failed to init logger!");
 
     error!("ERROR");
     warn!("WARN");
@@ -80,7 +80,7 @@ fn test_max_level_debug() {
 #[test]
 fn test_max_level_trace() {
     let expected_result = "[ERROR]: ERROR\n [WARN]: WARN\n [INFO]: INFO\n[DEBUG]: DEBUG\n[TRACE]: TRACE\n";
-    logger::templates::init_file_logger(LevelFilter::Trace, PATH_TO_TEST_FILE).expect("Failed to init logger!");
+    logger::templates::init_simple_file_logger(LevelFilter::Trace, PATH_TO_TEST_FILE).expect("Failed to init logger!");
 
     error!("ERROR");
     warn!("WARN");
