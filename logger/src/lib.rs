@@ -16,7 +16,7 @@ pub mod templates {
 
     pub extern fn get_console_logger(max_level: LevelFilter) -> Logger {
         Logger::new(
-            stdout(),
+            vec![Box::new(stdout())],
             max_level,
         )
     }
@@ -29,7 +29,7 @@ pub mod templates {
         }.context("Couldn´t open or crate file for file logger!")?;
 
         Ok(Logger::new(
-            file,
+            vec![Box::new(file)],
             max_level
         ))
     }
@@ -64,15 +64,19 @@ pub mod structs {
 
     pub struct Logger {
         pub(crate) max_level: LevelFilter,
-        pub(crate) writer: Arc<Mutex<dyn Write + Send>>
+        pub(crate) writers: Arc<Mutex<Vec<Box<(dyn Write + Send + 'static)>>>>
     }
 
     impl Logger {
-        pub fn new<W: Write + Send + 'static>(writer: W, max_level: LevelFilter) -> Self {
+        pub fn new(writers: Vec<Box<(dyn Write + Send + 'static)>>, max_level: LevelFilter) -> Self {
             Self {
                 max_level,
-                writer: Arc::new(Mutex::new(writer))
+                writers: Arc::new(Mutex::new(writers))
             }
+        }
+
+        pub fn add_writer(&mut self, writer: Box<(dyn Write + Send + 'static)>) {
+            self.writers.lock().unwrap().push(writer);
         }
     }
 
@@ -89,12 +93,14 @@ pub mod structs {
 
             let message: String = format!("{}: {}", PREFIX[record.metadata().level() as usize - PREFIX_START_VALUE], record.args());
 
-            let mut writer = self.writer.lock().unwrap();
-            let mut worked = writer.write_all(message.as_bytes()).is_ok();
-            worked &= writer.write_all(b"\n").is_ok();
-            if !worked {
-                stderr().write_all(b"Failed to log to desired destination!").expect("FATAL: Failed to write to stderr!");
-            }
+            let mut writers = self.writers.lock().unwrap();
+            writers.iter_mut().for_each(|writer| {
+                let mut worked = writer.write_all(message.as_bytes()).is_ok();
+                worked &= writer.write_all(b"\n").is_ok();
+                if !worked {
+                    stderr().write_all(b"Failed to log to desired destination!").expect("FATAL: Failed to write to stderr!");
+                }
+            });
         }
         fn flush(&self) {}
     }
